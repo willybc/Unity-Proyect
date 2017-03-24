@@ -1,10 +1,12 @@
 ﻿#pragma strict
 
 function Start () {
-    transform.position = Vector3(0,1,0);
+    
     
 }
 
 function Update () {
-	
+    
+    var Y : float = Time.deltaTime * 90;
+  	transform.rotation *= Quaternion.Euler(0, Y ,0) ;
 }
