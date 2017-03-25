@@ -6,7 +6,9 @@ function Start () {
 }
 
 function Update () {
-    if( Input.anyKeyDown){
-        SceneManager.LoadScene("MainGame");
-    }
+    
+}
+
+function IrAljuego () {
+    SceneManager.LoadScene("MainGame");
 }
