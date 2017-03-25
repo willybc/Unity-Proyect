@@ -1,5 +1,9 @@
 ﻿#pragma strict
 
+function Awake(){
+    Debug.Log(">>> Hola Mundo");
+}
+
 function Start () {
     
     
