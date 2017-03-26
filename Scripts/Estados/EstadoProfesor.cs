@@ -24,15 +24,13 @@ public class EstadoProfesor: InstanciaEstadoBase<EstadoProfesor>
             m_reloj = 0;
             if (!game.MuestraSiguientePaso(game.m_animadorMaestro))
             {
-           //     EstadoBase.Cambiar(EstadoIrJugador.Instancia);
+                EstadoBase.Cambiar(EstadoIrJugador.Instancia);
             }
-            
-        }
-        else
-        {
-
         }
     }
 
-
+    public override void End(MainGame game)
+    {
+        game.ReiniciarPaso();
+    }
 }
