@@ -11,7 +11,7 @@ public class MainGame : MonoBehaviour
     int m_misPuntos;
     public GameObject m_ingame;
     public GameObject m_gameover;
-    public GameObject m_vamos;
+    public Image m_empezar;
     public GameObject m_flecha;
     public GameObject m_mal;
     public GameObject m_camaraPrincipal;
@@ -21,6 +21,7 @@ public class MainGame : MonoBehaviour
     public Animator m_animadorMaestro;
     public Animator m_animadorJugador;
 
+    public AudioSource m_miFuenteDeSonido;
 
     public enum TipoPaso { None, Right, Up, Left, Down };
     static Quaternion[] PasoBase = new Quaternion[]{
@@ -30,6 +31,9 @@ public class MainGame : MonoBehaviour
         Quaternion.Euler(0,0,180f),
         Quaternion.Euler(0,0,270f)
     };
+
+    public AudioClip[] EfectosPaso;
+
     List<TipoPaso> m_Pasos = new List<TipoPaso>();
     List<TipoPaso>.Enumerator m_pasoActual;
     void Start()
@@ -48,10 +52,11 @@ public class MainGame : MonoBehaviour
     void Update()
     {
         EstadoBase.Actualizar();
+        ActualizaEmpezar();
     }
     void ReiniciarJuego()
     {
-        m_vamos.SetActive(false);
+        m_empezar.enabled = false ;
         m_nVidas = 3;
         m_misPuntos = 0;
         ActualizaVidas();
@@ -90,6 +95,7 @@ public class MainGame : MonoBehaviour
             int paso = (int)m_pasoActual.Current;
             animator.SetInteger("Direccion", paso);
             // Sonido.
+            m_miFuenteDeSonido.PlayOneShot(EfectosPaso[paso - 1]);
             m_flecha.transform.rotation = PasoBase[paso];
             return true;
         }
@@ -105,6 +111,7 @@ public class MainGame : MonoBehaviour
             int paso = (int)_paso;
             animator.SetInteger("Direccion", paso);
             // Sonido.
+            m_miFuenteDeSonido.PlayOneShot(EfectosPaso[paso - 1]);
             m_flecha.transform.rotation = PasoBase[paso];
             if (m_pasoActual.Current == _paso)
             {
@@ -128,13 +135,31 @@ public class MainGame : MonoBehaviour
         m_puntuacion.text = m_misPuntos.ToString("D6");
     }
 
+    float m_timerEmpezar;
+
     public void MuestraEmpezar()
     {
-        m_vamos.SetActive(true);
+        TocarSonido(MainGame.Efectos.Empezar1, MainGame.Efectos.Empezar2);
+        m_empezar.enabled = true;
+        m_empezar.color = Color.white;
+        m_timerEmpezar = 2;
+    }
+
+    public void ActualizaEmpezar()
+    {
+        if (m_empezar.enabled)
+        {
+            m_timerEmpezar -= Time.deltaTime * 2.0f;
+            if (m_timerEmpezar < 0) { m_timerEmpezar = 0; m_empezar.enabled = false; }
+            Color tmp = m_empezar.color;
+            tmp.a = m_timerEmpezar;
+            m_empezar.color = tmp;
+        }
     }
 
     public void MalPaso()
     {
+        TocarSonido(MainGame.Efectos.Mal1, MainGame.Efectos.Mal2);
         m_mal.SetActive(true);
         m_animadorJugador.SetInteger("Direccion", 5);
         m_animadorJugador.Update(0);
@@ -155,4 +180,17 @@ public class MainGame : MonoBehaviour
         m_ingame.SetActive(false);
         m_gameover.SetActive(true);
     }
+
+    public enum Efectos
+    {
+        Empezar1, Empezar2, Bien1, Bien2, Mal1, Mal2, Ganar, Perder
+    };
+
+    public AudioClip[] EfectosSonido;
+    public void TocarSonido(params Efectos[] efectos) {
+        int indice = Random.Range(0, efectos.Length);
+        m_miFuenteDeSonido.PlayOneShot(EfectosSonido[(int)efectos [indice]]);
+        }
+
 }
+
